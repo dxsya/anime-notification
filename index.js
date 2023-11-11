@@ -1,15 +1,17 @@
 import puppeteer from 'puppeteer'
 
-const URL = 'https://naruto-base.tv/novosti/drugoe_anime_rus'
+export const URL = 'https://naruto-base.tv/novosti/drugoe_anime_rus'
 const TITLE = 'Магическая'
 
 async function findStrInArray(array, str) {
   return array.filter((item) => item.includes(str))
 }
 
-async function parsePage(url) {
+export async function parsePage(url) {
+  let browser
+
   try {
-    const browser = await puppeteer.launch({ headless: false })
+    browser = await puppeteer.launch({ headless: false })
     const page = await browser.newPage()
     await page.goto(url)
 
@@ -18,13 +20,19 @@ async function parsePage(url) {
     })
 
     const needTitle = await findStrInArray(titles, TITLE)
+    if (!needTitle.length) {
+      console.log('not found')
+      return ['Not found']
+    }
+    console.log('needTitle:', needTitle)
 
-    console.log(needTitle)
-
-    await browser.close()
+    return needTitle
   } catch (error) {
     console.error('Произошла ошибка:', error)
+    throw error // rethrow the error
+  } finally {
+    if (browser) {
+      await browser.close()
+    }
   }
 }
-
-parsePage(URL)
