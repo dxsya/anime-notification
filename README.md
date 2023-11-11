@@ -1,4 +1,4 @@
-# parser
+# Anime Notification
 
 To install dependencies:
 
